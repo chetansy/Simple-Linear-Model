@@ -1,0 +1,116 @@
+calories<- read.csv(file.choose())
+summary(calories)
+
+plot(calories$Weight.gained..grams.,calories$Calories.Consumed) ##SCATTER PLOT
+
+attach(calories)
+cor(Weight.gained..grams.,Calories.Consumed)
+
+reg<- lm(Calories.Consumed~Weight.gained..grams.)     ##SLR Model
+summary(reg)
+##  R-squared:  0.8968,	Adjusted R-squared:  0.8882  ##
+
+pred<- predict(reg)
+pred
+
+reg$residuals
+sum(reg$residuals)
+mean(reg$residuals)
+
+sqrt(sum(reg$residuals^2)/nrow(calories))   ## RMSE Value
+sqrt(mean(reg$residuals)^2)
+
+confint(reg,level=0.95)       ## Confidance Interval            
+predict(reg,interval = 'predict')
+
+##  gg Plot  ##
+install.packages("ggplot2")
+library(ggplot2)
+ggplot(data = calories,aes(x= Weight.gained..grams.,y= Calories.Consumed)) + 
+      geom_point(colour='Blue') +
+      geom_line(colour='red',data = calories,aes(x= Weight.gained..grams.,y= pred))
+
+
+
+
+########  LOGARITHMIC MODEL  #######
+
+plot(log(Weight.gained..grams.),Calories.Consumed)
+cor(log(Weight.gained..grams.),Calories.Consumed)
+
+reg_log<- lm(Calories.Consumed~log(Weight.gained..grams.))  ##SLR Log Method
+summary(reg_log)
+###### R-squared:  0.8776,	Adjusted R-squared:  0.8674  #######
+
+pred_1<- predict(reg_log)
+
+reg_log$residuals
+sum(reg_log$residuals)
+mean(reg_log$residuals)
+
+sqrt(sum(reg_log$residuals^2)/nrow(calories))  ###  RMSE Value
+
+confint(reg_log,level = 0.95)
+predict(reg_log,interval = 'predict')
+
+ggplot(data = calories,aes(x= Weight.gained..grams.,y= Calories.Consumed)) + 
+  geom_point(colour='Blue') +
+  geom_line(colour='red',data = calories,aes(x= Weight.gained..grams.,y= pred_1))
+
+
+
+###### Exponential Method ######
+
+plot(Weight.gained..grams.,log(Calories.Consumed))
+cor(Weight.gained..grams.,log(Calories.Consumed))
+
+reg_exp<- lm(log(Calories.Consumed)~Weight.gained..grams.)
+summary(reg_exp)
+##   R-squared:  0.8077,	Adjusted R-squared:  0.7917 ##
+
+pred_2<- predict(reg_exp)
+pred_2
+exp<- exp(pred_2)
+
+reg_exp$residuals
+sum(reg_exp$residuals)
+mean(reg_exp$residuals)
+
+sqrt(mean(reg_exp$residuals^2))
+
+error = calories$Calories.Consumed - exp
+error
+sqrt(sum(error^2)/(nrow(calories)))  ###  RMSE Value
+
+confint(reg_exp,level = 0.95)
+predict(reg_exp,interval = 'predict')
+
+ggplot(data = calories,aes(x= Weight.gained..grams.,y= Calories.Consumed)) + 
+  geom_point(colour='Blue') +
+  geom_line(colour='red',data = calories,aes(x= Weight.gained..grams.,y= exp))
+
+
+####  Polynomial Model With 3 Degree ####
+
+plot(Weight.gained..grams.*Weight.gained..grams.*Weight.gained..grams.,
+     log(Calories.Consumed))
+cor(Weight.gained..grams.^3,log(Calories.Consumed))
+
+reg_poly3<- lm(log(Calories.Consumed)~ Weight.gained..grams.+I(Weight.gained..grams.^2)
+               +I(Weight.gained..grams.^3))
+summary(reg_poly3)
+###   R-squared:  0.8791,	Adjusted R-squared:  0.8428  ###
+
+pred_3<- predict(reg_poly3)
+exp_1<- exp(pred_3)
+
+reg_poly3$residuals
+sum(reg_poly3$residuals)
+mean(reg_poly3$residuals)
+
+## gg plot ##
+ggplot(data = calories,aes(x= Weight.gained..grams.+I(Weight.gained..grams.^2)
+                           +I(Weight.gained..grams.^3),y = Calories.Consumed))+
+        geom_point(color= 'blue')+
+        geom_line(data = calories,color='red',aes(x= Weight.gained..grams.+I(Weight.gained..grams.^2)
+                                                +I(Weight.gained..grams.^3),y = exp_1))
