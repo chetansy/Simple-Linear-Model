@@ -59,7 +59,7 @@ ggplot(data = calories,aes(x= Weight.gained..grams.,y= Calories.Consumed)) +
 
 
 
-###### Exponential Method ######
+###### Exponential Model ######
 
 plot(Weight.gained..grams.,log(Calories.Consumed))
 cor(Weight.gained..grams.,log(Calories.Consumed))
